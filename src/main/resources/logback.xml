@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="true" scan="true" scanPeriod="5 seconds">
+
+	<!-- 기본 콘솔로 출력 -->
+	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<!-- <pattern>%d{HH:mm:ss.SSS}|%.-1level|%logger{0}:%line|%msg%n</pattern> -->
+			<pattern>%date{yyyy-MM-dd HH:mm:ss.SSS}| %-4relative [%thread] |%.-1level| %logger [%line] : %msg%n</pattern>
+		</encoder>
+	</appender>
+	
+	<!-- File Appender -->
+	<appender name="queryAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+	      <level>error</level>
+	    </filter>
+		<file>/svc/thingseye2/logs/query/${env.servername}.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>
+				/svc/thingseye2/logs/iot/query/backup/${env.servername}-%d{yyyy-MM-dd}.%i.log
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>10MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<maxHistory>90</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS}|%.-1level|%logger:%line|%msg%n</pattern>
+		</encoder>
+	</appender>
+	
+	<!-- File Appender -->
+	<appender name="errorAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+	      <level>error</level>
+	    </filter>
+		<file>/svc/thingseye2/logs/iot/error/${env.servername}.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>
+				/svc/thingseye2/logs/iot/error/backup/${env.servername}-%d{yyyy-MM-dd}.%i.log
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>10MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<maxHistory>365</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS}|%.-1level|%logger:%line|%msg%n</pattern>
+		</encoder>
+	</appender>
+	
+	<appender name="consoleAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>/svc/thingseye2/logs/iot/consol/${env.servername}.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>
+				/svc/thingseye2/logs/iot/consol/backup/${env.servername}-%d{yyyy-MM-dd}.%i.log
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>10MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<maxHistory>365</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS}|%.-1level|%logger:%line|%msg%n</pattern>
+		</encoder>
+	</appender>	
+	
+	<appender name="airReportAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>/svc/thingseye2/logs/iot/stats/air/${env.servername}.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>
+				/svc/thingseye2/logs/iot/stats/air/%d{yyyyMMdd}/${env.servername}.%i.log
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>10MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<maxHistory>90</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>time=%d{yyyyMMddHHmmss}|%msg%n</pattern>
+		</encoder>
+	</appender>
+	
+	<appender name="bigDataAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>/svc/thingseye2/logs/iot/stats/bigdata/${env.servername}.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>
+				/svc/thingseye2/logs/iot/stats/bigdata/%d{yyyyMMdd}/${env.servername}.%i.log
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>10MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<maxHistory>90</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>time=%d{yyyyMMddHHmmss}|%msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<logger name="org.mybatis.spring" level="info" additivity="false">
+		<appender-ref ref="console" />
+	</logger>
+	
+	<logger name="com.zaxxer.hikari" level="info" additivity="false">
+		<appender-ref ref="console" />
+	</logger>
+	<logger name="org.springframework" level="info" additivity="false">
+		<appender-ref ref="console" />
+	</logger>
+	<logger name="org.apache.http" level="info" additivity="false">
+		<appender-ref ref="console" />
+	</logger>
+	<logger name="jdbc" level="debug" additivity="true">
+		<appender-ref ref="queryAppender" />
+	</logger>
+	<logger name="jdbc.resultset" level="error" additivity="true"></logger>
+	<logger name="jdbc.audit" level="error" additivity="true"></logger>
+	<logger name="jdbc.connection" level="error" additivity="true"></logger>
+	
+	<logger name="log4jdbc" level="debug" additivity="true"></logger>
+
+	<logger name="airReportLogger" level="info" additivity="false">
+		<appender-ref ref="airReportAppender" />
+	</logger>
+	
+	<logger name="bigDataLogger" level="info" additivity="false">
+		<appender-ref ref="bigDataAppender" />
+	</logger>
+	
+	<!-- Root logger declaration -->
+	<root level="debug">
+		<appender-ref ref="console" />
+		<appender-ref ref="consoleAppender" />
+		<appender-ref ref="errorAppender" />
+	</root>
+
+</configuration>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.umc.thingseye2.iotgw.mqtt.mapper.ProtocolMapper">
+
+	<!--  protocol 변경 DB 반영 query -->
+ 	<select id="getProtocolList" parameterType="com.umc.thingseye2.iotgw.mqtt.dto.ProtocolReqDTO" resultType="com.umc.thingseye2.iotgw.mqtt.dto.ProtocolDTO">
+		SELECT e.field_physical_name fieldPhysicalName
+     		 , e.protocol_order protocolOrder
+     		 , e.field_length fieldLength
+     		 , e.field_unit fieldUnit   
+		FROM t_iot_user_appliance a
+		INNER JOIN t_iot_appliance_model b ON a.appliance_model_id = b.appliance_model_id
+		INNER JOIN t_iot_protocol_appliance_mapping c ON b.appliance_model_id = c.appliance_model_id
+		INNER JOIN t_iot_appliance_protocol d ON c.protocol_id = d.protocol_id
+		INNER JOIN t_iot_protocol_field e ON d.protocol_id = e.protocol_id
+		WHERE 1=1
+		AND a.now_protocol_ver = d.protocol_ver_name
+		AND a.display_code = '11'
+		<if test="userApplianceId != null and userApplianceId != ''">
+		AND a.user_appliance_id = #{userApplianceId}
+		</if>
+		<if test="protocolType != null and protocolType != ''">
+		AND d.protocol_type = #{protocolType}
+		</if>
+		ORDER BY e.protocol_order asc
+	</select>
+	
+	<select id="oldgetDeviceProtocol" parameterType="com.umc.thingseye2.iotgw.mqtt.dto.ProtocolReqDTO" resultType="com.umc.thingseye2.iotgw.mqtt.dto.ProtocolDTO">
+		SELECT b.category_type
+	 		 , b.category_id
+     		 , b.version
+     		 , b.protocol_id
+     		 , b.protocol_name
+     		 , b.protocol_type
+     		 , b.protocol_align
+     		 , b.protocol_scope
+     		 , b.display_code
+		FROM ( 
+				SELECT a.category_type
+	 		 		 , a.category_id
+				FROM t_category_info a 
+                INNER JOIN t_device_model b ON a.category_type = b.category_type
+                INNER JOIN t_user_appliance c ON b.model_id = c.model_id
+				WHERE 1=1
+				AND a.category_id = b.category_id
+			    <if test="device_id != null and device_id != ''">
+    			AND c.user_appliance_id = #{device_id}
+  				</if>
+  				GROUP BY a.category_type, a.category_id
+			 ) a JOIN t_device_protocol b ON a.category_type = b.category_type
+		WHERE 1=1
+		AND a.category_id = b.category_id
+  		<if test="version != null and version != ''">
+    	AND b.version = #{version}
+  		</if>
+	</select>
+</mapper>
